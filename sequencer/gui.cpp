@@ -1,4 +1,4 @@
-#include "GUI.h"
+#include "gui.h"
 
 const int GUI::widths[5] = {6, 12, 18, 24, 30};
 const int GUI::heights[5] = {8, 16, 24, 32, 40};
