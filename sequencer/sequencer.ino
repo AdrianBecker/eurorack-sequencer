@@ -1,6 +1,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
-#include <gui.h>>
+#include <gui.h>
 
 #define DISP1_CS       43
 #define DISP2_CS       47
