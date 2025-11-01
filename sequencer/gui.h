@@ -38,16 +38,19 @@ class GUI {
         static const int widths[5];
         static const int heights[5];
 
-        static const int ROWS;
-        static const int COLS;
+        static const int ROWS = 4;
+        static const int COLS = 8;
 
         int seqMatrix[ROWS][COLS];
 
         Adafruit_ST7735 tft1;
         Adafruit_ST7735 tft2;
 
+        int8_t CS1, DC1, RST1;
+        int8_t CS2, DC2, RST2;
+
     public:
-        GUI(int8_t CS1, int8_t DC1, int8_t RST1, int8_t CS2, int8_t DC2, int8_t RST2) : tft1(CS1, DC1, RST1), tft2(CS2, DC2, RST2);
+        GUI(int8_t CS1, int8_t DC1, int8_t RST1, int8_t CS2, int8_t DC2, int8_t RST2);
 
         void begin();
         void clear();

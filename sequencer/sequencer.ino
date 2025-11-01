@@ -1,6 +1,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_ST7735.h>
-#include <gui.h>
+#include "gui.h"
 
 #define DISP1_CS       43
 #define DISP2_CS       47
@@ -13,7 +13,7 @@
 
 volatile bool currentEventUp = false;
 volatile bool updateEvent = false;
-int entry = 1;
+int step = 1;
 bool playing = false;
 volatile unsigned long lastTime = 0;
 
@@ -49,33 +49,33 @@ void setup() {
 
 void loop() {
     if (playing) {
-        entry = 1;
-        while (entry <= 32) {
+        step = 1;
+        while (step <= 32) {
             if (!playing) {
-                entry = 1;
+                step = 1;
                 break;
             }
-            if (entry == 1) {
-                gui.printCursor(entry, 32);
+            if (step == 1) {
+                gui.printCursor(step, 32);
             } else {
-                gui.printCursor(entry, entry - 1);
+                gui.printCursor(step, step - 1);
             }
             delay(125);
-            entry++;
+            step++;
         }
     } else {
         if (updateEvent) {
             Serial.println("Encoder Update");
-            int old_entry = entry;
-            if (currentEventUp && entry != 32) {
+            int old_step = step;
+            if (currentEventUp && step != 32) {
                 Serial.println("Drehung rechts");
-                entry += 1;
-            } else if (!currentEventUp && entry != 1) {
+                step += 1;
+            } else if (!currentEventUp && step != 1) {
                 Serial.println("Drehung links");
-                entry -= 1;
+                step -= 1;
             }
-            Serial.println(String(entry));
-            gui.printCursor(entry, old_entry);
+            Serial.println(String(step));
+            gui.printCursor(step, old_step);
             updateEvent = false;
         }
     }
@@ -90,7 +90,7 @@ void updateEncoder() {
 
 // ISR für Button
 void handleButton() {
-    gui.printCursor(1, entry);
-    entry = 1;
+    gui.printCursor(1, step);
+    step = 1;
     playing = !playing;
 }

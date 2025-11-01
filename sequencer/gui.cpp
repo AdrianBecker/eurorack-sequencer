@@ -2,31 +2,30 @@
 
 const int GUI::widths[5] = {6, 12, 18, 24, 30};
 const int GUI::heights[5] = {8, 16, 24, 32, 40};
-const int GUI::ROWS = 4;
-const int GUI::COLS = 8;
 
 extern const char* data[12];
 
-GUI::GUI(int8_t CS1, int8_t DC1, int8_t RST1, int8_t CS2, int8_t DC2, int8_t RST2) : tft1(CS1, DC1, RST1), tft2(CS2, DC2, RST2) {}
+GUI::GUI(int8_t CS1, int8_t DC1, int8_t RST1, int8_t CS2, int8_t DC2, int8_t RST2)
+    : tft1(CS1, DC1, RST1), tft2(CS2, DC2, RST2), CS1(CS1), DC1(DC1), RST1(RST1), CS2(CS2), DC2(DC2), RST2(RST2) {};
 
-void begin() {
+void GUI::begin() {
     // CS-Pins als Ausgang definieren
-    pinMode(DISP1_CS, OUTPUT);
-    pinMode(DISP2_CS, OUTPUT);
+    pinMode(CS1, OUTPUT);
+    pinMode(CS2, OUTPUT);
 
     // Beide CS-Pins HIGH starten
-    digitalWrite(DISP1_CS, HIGH);
-    digitalWrite(DISP2_CS, HIGH);
+    digitalWrite(CS1, HIGH);
+    digitalWrite(CS2, HIGH);
 
     // Display 1 initialisieren
-    digitalWrite(DISP1_CS, LOW);      // Display 1 aktiv
+    digitalWrite(CS1, LOW);      // Display 1 aktiv
     tft1.initR(INITR_144GREENTAB);
-    digitalWrite(DISP1_CS, HIGH);     // wieder deaktivieren
+    digitalWrite(CS1, HIGH);     // wieder deaktivieren
 
     // Display 2 initialisieren
-    digitalWrite(DISP2_CS, LOW);      // Display 2 aktiv
+    digitalWrite(CS2, LOW);      // Display 2 aktiv
     tft2.initR(INITR_144GREENTAB);
-    digitalWrite(DISP2_CS, HIGH);     // wieder deaktivieren
+    digitalWrite(CS2, HIGH);     // wieder deaktivieren
 
     tft1.setRotation(2);
     tft2.setRotation(2);
@@ -43,15 +42,14 @@ void begin() {
     this->printCosmetics(&tft1);
     this->printCosmetics(&tft2);
     this->printCursor(1, 1);
-    Serial.println(String(entry));
 }
 
-void clear() {
+void GUI::clear() {
     tft1.fillScreen(ST77XX_BLACK);
     tft2.fillScreen(ST77XX_BLACK);
 }
 
-void write(int step, String text) {
+void GUI::write(int step, String text) {
     CursorPos pos = determineCursorPos(step);
     if (text.length() == 1) {
         pos.x += widths[TEXT_SIZE - 1] / 2;
@@ -68,23 +66,23 @@ void write(int step, String text) {
     }
 }
 
-void writeEntry(int step, int data) {
+void GUI::writeEntry(int step, int data) {
     SeqPos pos = determineSeqPos(step);
     seqMatrix[pos.row][pos.col] = data;
 }
 
-int getEntry(int step) {
+int GUI::getEntry(int step) {
     SeqPos pos = determineSeqPos(step);
     return seqMatrix[pos.row - 1][pos.col - 1];
 }
 
-String getNote(int step) {
+String GUI::getNote(int step) {
     int idx = this->getEntry(step);
     Serial.println("Step " + String(step) + " -> " + String(data[idx]));
     return String(data[idx]);
 }
 
-void loadSeq() {
+void GUI::loadSeq() {
     int idx = 0;
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
@@ -99,7 +97,7 @@ void loadSeq() {
     Serial.println("Matrix geladen");
 }
 
-void printSeq() {
+void GUI::printSeq() {
     this->clear();
     this->loadSeq();
     for (int i = 0; i < ROWS; i++) {
@@ -110,7 +108,7 @@ void printSeq() {
     }
 }
 
-void printCursor(int new_step, int old_step) {
+void GUI::printCursor(int new_step, int old_step) {
     CursorPos old_pos = determineCursorPos(old_step);
     CursorPos new_pos = determineCursorPos(new_step);
 
@@ -127,7 +125,7 @@ void printCursor(int new_step, int old_step) {
     }
 }
 
-void printCosmetics(Adafruit_ST7735* tft) {
+void GUI::printCosmetics(Adafruit_ST7735* tft) {
     tft->setTextSize(TEXT_SIZE - 1);
 
     int x = DISP_HPADDING;
@@ -152,7 +150,7 @@ void printCosmetics(Adafruit_ST7735* tft) {
     tft->setTextColor(ST77XX_WHITE);
 }
 
-void printLines(Adafruit_ST7735* tft) {
+void GUI::printLines(Adafruit_ST7735* tft) {
     tft->setTextColor(ST77XX_WHITE);
     tft->setTextSize(TEXT_SIZE - 1);
     int offset = 0;
@@ -171,7 +169,7 @@ void printLines(Adafruit_ST7735* tft) {
     }
 }
 
-CursorPos determineCursorPos(int step) {
+GUI::CursorPos GUI::determineCursorPos(int step) {
     SeqPos seq = determineSeqPos(step);
     CursorPos pos;
 
@@ -209,7 +207,7 @@ CursorPos determineCursorPos(int step) {
     return pos;
 }
 
-SeqPos determineSeqPos(int step) {
+GUI::SeqPos GUI::determineSeqPos(int step) {
     SeqPos pos;
 
     pos.row = (step - 1) / 8 + 1;
@@ -218,6 +216,6 @@ SeqPos determineSeqPos(int step) {
     return pos;
 }
 
-int determineStep(int row, int col) {
+int GUI::determineStep(int row, int col) {
     return (row - 1) * COLS + col;
 }
