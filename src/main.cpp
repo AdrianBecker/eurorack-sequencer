@@ -25,6 +25,20 @@ GUI gui(DISP1_CS, DISP1_DC, DISP1_RESET, DISP2_CS, DISP2_DC, DISP2_RESET);
 #define DT  20
 #define SW  19
 
+// ISR für Drehung
+void updateEncoder() {
+    bool dt = digitalRead(DT);
+    currentEventUp = (dt == LOW);  // Richtung bestimmen
+    updateEvent = true;
+}
+
+// ISR für Button
+void handleButton() {
+    gui.printCursor(1, step);
+    step = 1;
+    playing = !playing;
+}
+
 void setup() {
     Serial.begin(9600);
 
@@ -79,18 +93,4 @@ void loop() {
             updateEvent = false;
         }
     }
-}
-
-// ISR für Drehung
-void updateEncoder() {
-    bool dt = digitalRead(DT);
-    currentEventUp = (dt == LOW);  // Richtung bestimmen
-    updateEvent = true;
-}
-
-// ISR für Button
-void handleButton() {
-    gui.printCursor(1, step);
-    step = 1;
-    playing = !playing;
 }
